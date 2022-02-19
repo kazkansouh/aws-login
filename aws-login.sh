@@ -27,14 +27,29 @@ fi
 # dont remove this line
 unset AWS_SESSION_TOKEN
 
-# update or remove the below if they are set already external
-export AWS_ACCESS_KEY_ID=AKEXAMPLEEXAMPLE
-export AWS_REGION=${2:-eu-west-2}
-export AWS_DEFAULT_REGION=${AWS_REGION}
-export AWS_SECRET_ACCESS_KEY=EXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE
+# update or remove the below if access key is already set (e.g. config file)
+SCRIPT_DIR="$(dirname $(realpath ${BASH_SOURCE[0]}))"
+if test -f "${SCRIPT_DIR}/.env"; then
+    . "${SCRIPT_DIR}/.env"
+else
+  # Or simply define AWS access key in this file
+  export AWS_ACCESS_KEY_ID=AKEXAMPLEEXAMPLE
+  export AWS_SECRET_ACCESS_KEY=EXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE
+fi
 
-# update this
-MFA=arn:aws:iam::123456789:mfa/EXAMPLE
+echo $AWS_ACCESS_KEY_ID
+echo $AWS_SECRET_ACCESS_KEY
+
+# set region if required
+if test -z "${AWS_REGION}" -o -n "${2}"; then
+    export AWS_REGION=${2:-eu-west-2}
+    export AWS_DEFAULT_REGION=${AWS_REGION}
+fi
+
+if test -z "${MFA}"; then
+    # update this
+    MFA=arn:aws:iam::123456789:mfa/EXAMPLE
+fi
 
 eval $(aws sts get-session-token --serial-number "${MFA}" --token-code "$1" --duration-seconds $((60*60*24)) | jq -r '.Credentials | [ "AWS_ACCESS_KEY_ID=\(.AccessKeyId)", "AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)", "AWS_SESSION_TOKEN=\(.SessionToken)" ][] | "export \(.)"')
 
