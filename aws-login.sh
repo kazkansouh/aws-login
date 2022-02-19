@@ -37,8 +37,10 @@ else
   export AWS_SECRET_ACCESS_KEY=EXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE
 fi
 
-echo $AWS_ACCESS_KEY_ID
-echo $AWS_SECRET_ACCESS_KEY
+if test "${AWS_ACCESS_KEY_ID}" = "AKEXAMPLEEXAMPLE" ; then
+    2>&1 echo "AWS access key not set."
+    exit 1
+fi
 
 # set region if required
 if test -z "${AWS_REGION}" -o -n "${2}"; then
