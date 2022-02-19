@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [[ $# -ne 1 || ! "$1" =~ ^[0-9]{6}$ || "${BASH_SOURCE[0]}" == "${0}" ]] ; then
-    1>&2 echo "usage: source $(basename -- $0) MFACODE"
+if [[ $# -lt 1 || ! "$1" =~ ^[0-9]{6}$ || "${BASH_SOURCE[0]}" == "${0}" ]] ; then
+    1>&2 echo "usage: source $(basename -- $0) MFACODE [aws-region]"
     if [[ "${BASH_SOURCE[0]}" == "${0}" ]] ; then
         exit 1
     else
@@ -29,7 +29,7 @@ unset AWS_SESSION_TOKEN
 
 # update or remove the below if they are set already external
 export AWS_ACCESS_KEY_ID=AKEXAMPLEEXAMPLE
-export AWS_REGION=eu-west-2
+export AWS_REGION=${2:-eu-west-2}
 export AWS_DEFAULT_REGION=${AWS_REGION}
 export AWS_SECRET_ACCESS_KEY=EXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE
 
